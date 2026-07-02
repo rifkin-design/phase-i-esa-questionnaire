@@ -368,7 +368,19 @@ document.getElementById("quform").addEventListener("submit", async function(e){
       html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff",scrollX:0,scrollY:0,windowWidth:816},
       jsPDF:{unit:"in",format:"letter",orientation:"portrait"}
     };
-    var pdf = await html2pdf().set(opt).from(tpl).toPdf().get("pdf");
+    // The PDF library clones the template to render it; if the template is hidden
+    // off-screen the clone renders blank. So put it into normal flow (below the
+    // form, invisible inside the iframe) for the capture, then hide it again.
+    tpl.style.position = "static";
+    tpl.style.left = "auto";
+    window.scrollTo(0,0);
+    var pdf;
+    try {
+      pdf = await html2pdf().set(opt).from(tpl).toPdf().get("pdf");
+    } finally {
+      tpl.style.position = "absolute";
+      tpl.style.left = "-9999px";
+    }
     var blob = pdf.output("blob");
     var fname = fileStamp();
 
