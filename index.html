@@ -101,7 +101,7 @@
   .req{color:var(--amber);}
 
   /* ---- hidden PDF template (rendered off-screen) ---- */
-  #pdf-template{position:fixed;left:-11000px;top:0;width:8.5in;background:#fff;}
+  #pdf-template{position:absolute;left:-9999px;top:0;width:8.5in;background:#fff;}
   #pdf-template .pt{padding:0.5in 0.55in;font-size:10.2px;color:var(--ink);line-height:1.35;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;}
   #pdf-template .p-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid var(--olive);padding-bottom:6px;margin-bottom:9px;}
   #pdf-template .p-header img{height:52px;}
@@ -365,7 +365,7 @@ document.getElementById("quform").addEventListener("submit", async function(e){
       margin:0,
       filename:fileStamp(),
       image:{type:"jpeg",quality:0.98},
-      html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff"},
+      html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff",scrollX:0,scrollY:0,windowWidth:816},
       jsPDF:{unit:"in",format:"letter",orientation:"portrait"}
     };
     var pdf = await html2pdf().set(opt).from(tpl).toPdf().get("pdf");
@@ -377,14 +377,32 @@ document.getElementById("quform").addEventListener("submit", async function(e){
     a.href = URL.createObjectURL(blob);
     a.download = fname; document.body.appendChild(a); a.click(); a.remove();
 
-    // 2) send to AZ-RI via Formspree (data fields + PDF attachment)
+    // 2) send to AZ-RI via Formspree — clean, form-like labels + PDF attachment
+    var QLABELS = {
+      envLiens:"1. Environmental cleanup liens",
+      auls:"2. Activity & use limitations (AULs)",
+      specKnowledge:"3. Specialized knowledge",
+      fairValue:"4. Purchase price vs. fair market value",
+      pastUses:"5a. Past uses of the property",
+      chemicals:"5b. Chemicals present / once present",
+      spills:"5c. Spills or chemical releases",
+      cleanups:"5d. Environmental cleanups",
+      obvious:"6. Obvious indicators of contamination"
+    };
     var fd = new FormData();
-    ["userName","userTitle","userOrg","userEmail","propertyAddress","signature","signDate"].forEach(function(k){ fd.append(k, val(k)); });
+    fd.append("User Name", val("userName"));
+    fd.append("Title / Role", val("userTitle"));
+    fd.append("Organization", val("userOrg"));
+    fd.append("Email", val("userEmail"));
+    fd.append("Property Address", val("propertyAddress"));
     QUESTIONS.forEach(function(q){
       if(q.header) return;
-      fd.append(q.key, radioVal(q.key));
-      fd.append(q.key+"Details", val(q.key+"Details"));
+      var ans = radioVal(q.key);
+      var det = val(q.key+"Details");
+      fd.append(QLABELS[q.key], ans + (det ? "  —  " + det : ""));
     });
+    fd.append("Signature", val("signature"));
+    fd.append("Date", prettyDate(val("signDate")));
     fd.append("_subject", "Phase I ESA User Questionnaire — "+val("userName"));
     fd.append("attachment", new File([blob], fname, {type:"application/pdf"}));
 
