@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Phase I ESA — User Questionnaire | AZ-RI Consultants</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.3/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
   :root{
     --olive:#6b7540; --olive-dark:#4a5230; --olive-light:#eef0e4;
@@ -231,20 +232,12 @@
     <div id="status"></div>
   </form>
 
-  <div style="text-align:center;font-size:11px;color:#b7bba4;margin-top:18px;">Form version 3</div>
+  <div style="text-align:center;font-size:11px;color:#b7bba4;margin-top:18px;">Form version 4</div>
 
 </div>
 
-<!-- ===== off-screen PDF template ===== -->
-<div id="pdf-template"><div class="pt"></div></div>
-
 <script>
-/* ============================================================
-   CONFIG — replace with your Formspree form endpoint.
-   Reuse the same form ID your current questionnaire posts to,
-   OR create a new form in Formspree. Attachments require a
-   paid Formspree plan.
-   ============================================================ */
+/* ===== AZ-RI Phase I ESA User Questionnaire — PDF built directly with jsPDF (v4) ===== */
 var FORMSPREE_ENDPOINT = "https://formspree.io/f/maqbgaza";
 var LOGO = "data:image/png;base64,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";
 
@@ -285,13 +278,11 @@ var QUESTIONS = [
     }
     host.appendChild(div);
   });
-  // default date = today
   var d = new Date();
   var iso = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   document.querySelector('[name=signDate]').value = iso;
 })();
 
-function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function val(name){var el=document.querySelector('[name="'+name+'"]');return el?el.value.trim():"";}
 function radioVal(name){var el=document.querySelector('[name="'+name+'"]:checked');return el?el.value:"";}
 function prettyDate(iso){
@@ -300,98 +291,141 @@ function prettyDate(iso){
   var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
   return months[parseInt(p[1],10)-1]+" "+parseInt(p[2],10)+", "+p[0];
 }
-
-function buildTemplate(){
-  var rows = "";
-  QUESTIONS.forEach(function(q){
-    if(q.header){
-      rows += '<tr><td class="qn"></td><td class="qt">'+q.text+'</td><td class="ans"></td><td class="det empty"></td></tr>';
-      return;
-    }
-    var ans = radioVal(q.key);
-    var cls = ans==="Yes" ? "yes" : (ans==="N/A" ? "na" : "no");
-    var pill = '<span class="pill '+cls+'">'+(ans?ans.toUpperCase():"&mdash;")+'</span>';
-    var det = esc(val(q.key+"Details"));
-    var detCell = det ? '<td class="det">'+det+'</td>' : '<td class="det empty">&mdash;</td>';
-    var label = q.sub ? '<span class="indent">'+q.text+'</span>' : q.text;
-    var numCell = q.sub ? "" : q.num;
-    rows += '<tr><td class="qn">'+numCell+'</td><td class="qt">'+(q.sub?'<span style="padding-left:14px;">'+q.text+'</span>':q.text)+'</td>'+
-            '<td class="ans">'+pill+'</td>'+detCell+'</tr>';
-  });
-
-  var html =
-    '<div class="p-header">'+
-      '<img src="'+LOGO+'" alt="AZ-RI Consultants">'+
-      '<div class="p-contact"><span class="lead">az-ri.com &middot; info@az-ri.com</span><br>919 W. 34th Street, #4706, Baltimore, MD 21211</div>'+
-    '</div>'+
-    '<div class="p-title"><h1>Phase I ESA &mdash; User Questionnaire</h1>'+
-      '<div class="std">All Appropriate Inquiries (40 CFR Part 312) &middot; ASTM E1527-21</div></div>'+
-    '<table class="info">'+
-      '<tr><td class="lbl">User Name</td><td class="v">'+esc(val("userName"))+'</td><td class="lbl">Title</td><td class="v">'+esc(val("userTitle"))+'</td></tr>'+
-      '<tr><td class="lbl">Organization</td><td class="v">'+esc(val("userOrg"))+'</td><td class="lbl">Email</td><td class="v">'+esc(val("userEmail"))+'</td></tr>'+
-      '<tr><td class="lbl">Property</td><td class="v" colspan="3">'+esc(val("propertyAddress"))+'</td></tr>'+
-    '</table>'+
-    '<div class="section-head">User&rsquo;s Responsibilities &amp; Knowledge</div>'+
-    '<div class="p-intro">To qualify for certain landowner liability protections under CERCLA, the user of this Phase I ESA must provide the following information (to the extent known) to the environmental professional.</div>'+
-    '<table class="q"><thead><tr><th style="width:16px;"></th><th>Inquiry</th><th class="c" style="width:52px;">Response</th><th class="c" style="width:172px;">If yes, details / basis</th></tr></thead><tbody>'+rows+'</tbody></table>'+
-    '<div class="cert">I certify that the information provided above is true and correct to the best of my knowledge and belief.</div>'+
-    '<table class="sig"><tr>'+
-      '<td style="width:44%;"><div class="sig-line">'+esc(val("signature"))+'</div><div class="sig-cap">Signature</div></td>'+
-      '<td style="width:34%;"><div class="sig-line">'+esc(val("userName"))+'</div><div class="sig-cap">Printed Name</div></td>'+
-      '<td style="width:22%;"><div class="sig-line">'+esc(prettyDate(val("signDate")))+'</div><div class="sig-cap">Date</div></td>'+
-    '</tr></table>'+
-    '<div class="p-footer"><span>AZ-RI Consultants &middot; Phase I ESA User Questionnaire</span><span>Submitted via az-ri.com on '+esc(prettyDate(val("signDate")))+'</span></div>';
-
-  document.querySelector("#pdf-template .pt").innerHTML = html;
-}
-
+function plain(h){return (h||"").replace(/<[^>]+>/g,"").replace(/&mdash;/g,"—").replace(/&ndash;/g,"–").replace(/&amp;/g,"&").replace(/&rsquo;/g,"’").replace(/&ldquo;/g,"“").replace(/&rdquo;/g,"”").replace(/&middot;/g,"·").replace(/&nbsp;/g," ");}
 function fileStamp(){
   var name = val("userName").replace(/[^A-Za-z0-9]+/g,"_").replace(/^_|_$/g,"") || "User";
   return "AZ-RI_Phase_I_ESA_User_Questionnaire_"+name+".pdf";
+}
+function gatherData(){
+  var answers={}, details={};
+  QUESTIONS.forEach(function(q){ if(q.header) return; answers[q.key]=radioVal(q.key); var d=val(q.key+"Details"); if(d) details[q.key]=d; });
+  return { userName:val("userName"), userTitle:val("userTitle"), userOrg:val("userOrg"), userEmail:val("userEmail"),
+           propertyAddress:val("propertyAddress"), answers:answers, details:details, signature:val("signature"), signDate:prettyDate(val("signDate")) };
+}
+
+var OLIVE=[107,117,64], OLIVE_DK=[74,82,48], OLIVE_LT=[238,240,228],
+    GREY=[90,92,80], AMBER=[154,91,43], NAGREY=[138,140,122],
+    RULE=[201,205,182], INK=[31,33,21], WHITE=[255,255,255];
+
+function buildPdf(data){
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF({unit:'pt',format:'letter'});
+  var PW=612, ML=42, MR=42, contentW=PW-ML-MR;
+  var logoW=140, logoH=logoW*415/1252;
+  doc.addImage(LOGO,'PNG',ML,32,logoW,logoH);
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(OLIVE_DK[0],OLIVE_DK[1],OLIVE_DK[2]);
+  doc.text('az-ri.com  ·  info@az-ri.com', PW-MR, 46, {align:'right'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(GREY[0],GREY[1],GREY[2]);
+  doc.text('919 W. 34th Street, #4706, Baltimore, MD 21211', PW-MR, 58, {align:'right'});
+  doc.setDrawColor(OLIVE[0],OLIVE[1],OLIVE[2]); doc.setLineWidth(2); doc.line(ML,86,PW-MR,86);
+  doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(OLIVE_DK[0],OLIVE_DK[1],OLIVE_DK[2]);
+  doc.text('PHASE I ESA — USER QUESTIONNAIRE', PW/2, 108, {align:'center'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(GREY[0],GREY[1],GREY[2]);
+  doc.text('All Appropriate Inquiries (40 CFR Part 312)  ·  ASTM E1527-21', PW/2, 121, {align:'center'});
+
+  var lblS={fontStyle:'bold',fontSize:7,textColor:OLIVE_DK,cellPadding:{top:3,bottom:3,left:8,right:2}};
+  var valS={fontStyle:'bold',fontSize:9,textColor:INK,cellPadding:{top:3,bottom:3,left:2,right:8}};
+  doc.autoTable({
+    startY:132, margin:{left:ML,right:MR}, theme:'plain',
+    styles:{fillColor:OLIVE_LT,lineWidth:0,valign:'middle'},
+    columnStyles:{0:{cellWidth:78},1:{cellWidth:186},2:{cellWidth:52},3:{cellWidth:contentW-78-186-52}},
+    body:[
+      [{content:'USER NAME',styles:lblS},{content:data.userName||'',styles:valS},{content:'TITLE',styles:lblS},{content:data.userTitle||'',styles:valS}],
+      [{content:'ORGANIZATION',styles:lblS},{content:data.userOrg||'',styles:valS},{content:'EMAIL',styles:lblS},{content:data.userEmail||'',styles:valS}],
+      [{content:'PROPERTY',styles:lblS},{content:data.propertyAddress||'',colSpan:3,styles:valS}]
+    ]
+  });
+  var infoTop=132, infoBot=doc.lastAutoTable.finalY;
+  doc.setFillColor(OLIVE[0],OLIVE[1],OLIVE[2]); doc.rect(ML,infoTop,3,infoBot-infoTop,'F');
+
+  var y=infoBot+10;
+  doc.setFillColor(OLIVE[0],OLIVE[1],OLIVE[2]); doc.rect(ML,y,contentW,15,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(WHITE[0],WHITE[1],WHITE[2]);
+  doc.text("USER'S RESPONSIBILITIES & KNOWLEDGE", ML+7, y+10.3);
+  y+=15;
+  doc.setFont('helvetica','italic'); doc.setFontSize(8.3); doc.setTextColor(GREY[0],GREY[1],GREY[2]);
+  var intro=doc.splitTextToSize('To qualify for certain landowner liability protections under CERCLA, the user of this Phase I ESA must provide the following information (to the extent known) to the environmental professional.', contentW-4);
+  doc.text(intro, ML+2, y+12);
+  y=y+12+intro.length*10+4;
+
+  var pills={};
+  var body=QUESTIONS.map(function(q,i){
+    var inquiry, numCell;
+    if(q.sub){ numCell=''; inquiry=q.sub+'  '+plain(q.text); }
+    else { numCell=q.num||''; inquiry=plain(q.text); }
+    if(q.header){
+      return [{content:numCell,styles:{fontStyle:'bold',textColor:OLIVE_DK}},{content:inquiry,styles:{fontStyle:'bold'}},{content:''},{content:''}];
+    }
+    var ans=(data.answers&&data.answers[q.key])||''; pills[i]=ans;
+    var det=(data.details&&data.details[q.key])||'';
+    return [
+      {content:numCell,styles:{fontStyle:'bold',textColor:OLIVE_DK}},
+      {content:inquiry, styles:{fontStyle: q.sub?'normal':'bold'}},
+      {content:''},
+      {content: det||'—', styles:{textColor: det?GREY:[183,187,164], halign: det?'left':'center', fontSize:8}}
+    ];
+  });
+  doc.autoTable({
+    startY:y, margin:{left:ML,right:MR}, theme:'grid',
+    head:[[{content:''},{content:'Inquiry'},{content:'Response'},{content:'If yes, details / basis'}]],
+    headStyles:{fillColor:OLIVE_DK,textColor:WHITE,fontStyle:'bold',fontSize:8,halign:'left',cellPadding:{top:4,bottom:4,left:6,right:6}},
+    styles:{fontSize:8.5,textColor:INK,lineColor:RULE,lineWidth:0.5,cellPadding:{top:5,bottom:5,left:6,right:6},valign:'top',overflow:'linebreak'},
+    columnStyles:{0:{cellWidth:16,halign:'center'},1:{cellWidth:contentW-16-52-150},2:{cellWidth:52,halign:'center'},3:{cellWidth:150}},
+    alternateRowStyles:{fillColor:[247,248,241]},
+    body:body,
+    didParseCell:function(hook){ if(hook.section==='head'){ if(hook.column.index===2||hook.column.index===3) hook.cell.styles.halign='center'; } },
+    didDrawCell:function(hook){
+      if(hook.section==='body' && hook.column.index===2){
+        var ans=pills[hook.row.index];
+        if(ans){
+          var c = ans==='Yes'?AMBER:(ans==='N/A'?NAGREY:OLIVE);
+          var txt=ans.toUpperCase();
+          doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+          var tw=doc.getTextWidth(txt);
+          var pw=tw+14, ph=13;
+          var px=hook.cell.x+(hook.cell.width-pw)/2;
+          var py=hook.cell.y+5;
+          doc.setFillColor(c[0],c[1],c[2]); doc.roundedRect(px,py,pw,ph,6.5,6.5,'F');
+          doc.setTextColor(255,255,255);
+          doc.text(txt, px+pw/2, py+9, {align:'center'});
+        }
+      }
+    }
+  });
+
+  y=doc.lastAutoTable.finalY;
+  doc.setFont('helvetica','italic'); doc.setFontSize(8.3); doc.setTextColor(GREY[0],GREY[1],GREY[2]);
+  doc.text('I certify that the information provided above is true and correct to the best of my knowledge and belief.', ML+2, y+18);
+  var sy=y+52;
+  var col1=ML+2, col1w=232, col2=ML+270, col2w=150, col3=ML+440, col3w=90;
+  doc.setDrawColor(42,44,31); doc.setLineWidth(0.8);
+  doc.line(col1,sy,col1+col1w,sy); doc.line(col2,sy,col2+col2w,sy); doc.line(col3,sy,col3+col3w,sy);
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(INK[0],INK[1],INK[2]);
+  doc.text(data.signature||'', col1, sy-4); doc.text(data.userName||'', col2, sy-4); doc.text(data.signDate||'', col3, sy-4);
+  doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(GREY[0],GREY[1],GREY[2]);
+  doc.text('SIGNATURE', col1, sy+11); doc.text('PRINTED NAME', col2, sy+11); doc.text('DATE', col3, sy+11);
+  doc.setDrawColor(RULE[0],RULE[1],RULE[2]); doc.setLineWidth(0.5); doc.line(ML,760,PW-MR,760);
+  doc.setFontSize(7.5); doc.setTextColor(154,156,136);
+  doc.text('AZ-RI Consultants  ·  Phase I ESA User Questionnaire', ML, 771);
+  doc.text('Submitted via az-ri.com on '+(data.signDate||''), PW-MR, 771, {align:'right'});
+  return doc;
 }
 
 document.getElementById("quform").addEventListener("submit", async function(e){
   e.preventDefault();
   var form = e.target;
   if(!form.checkValidity()){ form.reportValidity(); return; }
-
   var btn = document.getElementById("submitBtn");
   var status = document.getElementById("status");
   btn.disabled = true; btn.textContent = "Generating PDF…";
   status.className = ""; status.textContent = "";
-
   try{
-    buildTemplate();
-    var tpl = document.getElementById("pdf-template");
-    var opt = {
-      margin:0,
-      filename:fileStamp(),
-      image:{type:"jpeg",quality:0.98},
-      html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff",scrollX:0,scrollY:0,windowWidth:816},
-      jsPDF:{unit:"in",format:"letter",orientation:"portrait"}
-    };
-    // The PDF library clones the template to render it; if the template is hidden
-    // off-screen the clone renders blank. So put it into normal flow (below the
-    // form, invisible inside the iframe) for the capture, then hide it again.
-    tpl.style.position = "static";
-    tpl.style.left = "auto";
-    window.scrollTo(0,0);
-    var pdf;
-    try {
-      pdf = await html2pdf().set(opt).from(tpl).toPdf().get("pdf");
-    } finally {
-      tpl.style.position = "absolute";
-      tpl.style.left = "-9999px";
-    }
-    var blob = pdf.output("blob");
+    var data = gatherData();
+    var doc = buildPdf(data);
     var fname = fileStamp();
+    var blob = doc.output("blob");
+    doc.save(fname);
 
-    // 1) download client copy
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = fname; document.body.appendChild(a); a.click(); a.remove();
-
-    // 2) send to AZ-RI via Formspree — clean, form-like labels + PDF attachment
     var QLABELS = {
       envLiens:"1. Environmental cleanup liens",
       auls:"2. Activity & use limitations (AULs)",
@@ -425,11 +459,10 @@ document.getElementById("quform").addEventListener("submit", async function(e){
       var res = await fetch(FORMSPREE_ENDPOINT,{method:"POST",body:fd,headers:{Accept:"application/json"}});
       sent = res.ok;
     }
-
     status.className = "ok";
     status.textContent = sent
       ? "Thank you — your completed questionnaire has been downloaded and submitted to AZ-RI Consultants."
-      : "Your PDF has been downloaded. (Submission to AZ-RI is not yet configured — see setup notes.)";
+      : "Your PDF has been downloaded. (Submission to AZ-RI is not yet configured.)";
     btn.textContent = "Submitted";
   }catch(err){
     console.error(err);
