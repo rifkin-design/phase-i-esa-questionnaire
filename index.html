@@ -430,6 +430,7 @@ document.getElementById("quform").addEventListener("submit", async function(e){
     fd.append("Title / Role", val("userTitle"));
     fd.append("Organization", val("userOrg"));
     fd.append("Email", val("userEmail"));
+    fd.append("_replyto", val("userEmail"));
     fd.append("Property Address", val("propertyAddress"));
     QUESTIONS.forEach(function(q){
       if(q.header) return;
@@ -446,11 +447,21 @@ document.getElementById("quform").addEventListener("submit", async function(e){
       var res = await fetch(FORMSPREE_ENDPOINT,{method:"POST",body:fd,headers:{Accept:"application/json"}});
       sent = res.ok;
     }
-    status.className = "ok";
-    status.textContent = sent
-      ? "Thank you — your completed questionnaire has been downloaded and submitted to AZ-RI Consultants."
-      : "Your PDF has been downloaded. (Submission to AZ-RI is not yet configured.)";
-    btn.textContent = "Submitted";
+    var configured = FORMSPREE_ENDPOINT.indexOf("YOUR_FORM_ID")===-1;
+    if(sent){
+      status.className = "ok";
+      status.textContent = "Thank you — your completed questionnaire has been downloaded and submitted to AZ-RI Consultants.";
+      btn.textContent = "Submitted";
+    } else if(!configured){
+      status.className = "ok";
+      status.textContent = "Your PDF has been downloaded. (Submission to AZ-RI is not yet configured.)";
+      btn.textContent = "Submitted";
+    } else {
+      status.className = "err";
+      status.textContent = "Your PDF downloaded to your computer, but the copy to AZ-RI may not have gone through. Please email your saved PDF to info@az-ri.com so we receive it.";
+      btn.disabled = false;
+      btn.textContent = "Retry submission";
+    }
   }catch(err){
     console.error(err);
     status.className = "err";
